@@ -24,6 +24,13 @@ public class GestionnaireInterface : MonoBehaviour
 
     [SerializeField] private TMP_Text[] valeursDepart;
     [SerializeField] private TMP_Dropdown difficulteDropdown;
+    [SerializeField] private TMP_Dropdown caraDropdown;
+    [SerializeField] private Camera cameraHomme;
+    [SerializeField] private Camera cameraFemme;
+    [SerializeField] private RawImage maleCharacterImage;
+    [SerializeField] private RawImage femaleCharacterImage;
+
+    private int caraIndex = 0;
 
     // Start is called before the first frame update
     void Start()
@@ -33,6 +40,9 @@ public class GestionnaireInterface : MonoBehaviour
 
         difficulte = Difficulte.Facile;
         MettreAJour(valeursFacile);
+
+        cameraFemme.gameObject.SetActive(false);
+        femaleCharacterImage.gameObject.SetActive(false);
     }
 
     void Update()
@@ -80,6 +90,8 @@ public class GestionnaireInterface : MonoBehaviour
         ParametresParties.Instance.SemencesDepart = valeursActuelles[2];
         ParametresParties.Instance.TempsCroissance = valeursActuelles[3];
         ParametresParties.Instance.DelaiCueillete = valeursActuelles[4];
+        ParametresParties.Instance.caraIndex = caraIndex;
+        //Debug.Log(ParametresParties.Instance.caraIndex);    
 
         if (nomJoueur.text != string.Empty)
         {
@@ -107,5 +119,25 @@ public class GestionnaireInterface : MonoBehaviour
     public void ChangerNomJoueur()
     {
         presentation.text = $"\u266A \u266B Dans la ferme \u00e0  {nomJoueur.text} \u266B \u266A";
+    }
+
+    public void ChangerCara()
+    {
+        caraIndex = caraDropdown.value;
+        switch (caraIndex)
+        {
+            case 0:
+                cameraHomme.gameObject.SetActive(true);
+                cameraFemme.gameObject.SetActive(false);
+                maleCharacterImage.gameObject.SetActive(true);
+                femaleCharacterImage.gameObject.SetActive(false);
+                break;
+            case 1:
+                cameraHomme.gameObject.SetActive(false);
+                cameraFemme.gameObject.SetActive(true);
+                maleCharacterImage.gameObject.SetActive(false);
+                femaleCharacterImage.gameObject.SetActive(true);
+                break;
+        }
     }
 }

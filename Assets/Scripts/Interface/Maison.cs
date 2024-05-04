@@ -13,7 +13,12 @@ public class Maison : MonoBehaviour
     void Start()
     {
         _panelMaison.SetActive(false);
-        _joueur = UnityEngine.GameObject.Find("Joueur").GetComponent<ComportementJoueur>();
+        if(ParametresParties.Instance.caraIndex == 0){
+            _joueur = UnityEngine.GameObject.Find("Joueur").GetComponent<ComportementJoueur>();
+        }
+        else if(ParametresParties.Instance.caraIndex == 1){
+            _joueur = UnityEngine.GameObject.Find("Joueuse").GetComponent<ComportementJoueur>();
+        }
     }
 
     private void OnGUI()

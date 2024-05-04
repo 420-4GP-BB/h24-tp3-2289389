@@ -16,7 +16,10 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
-        _joueur = GameObject.Find("Joueur").GetComponent<ComportementJoueur>();
+        if (ParametresParties.Instance.caraIndex == 0)
+            _joueur = GameObject.Find("Joueur").GetComponent<ComportementJoueur>();
+        else if (ParametresParties.Instance.caraIndex == 1)
+            _joueur = GameObject.Find("Joueuse").GetComponent<ComportementJoueur>();
         _inventaireJoueur = _joueur.GetComponent<Inventaire>();
         _energieJoueur = _joueur.GetComponent<EnergieJoueur>();
         _chous = FindObjectsByType<ChouMesh3D>(FindObjectsSortMode.None);

@@ -16,7 +16,12 @@ public class CodesTriche : MonoBehaviour
     void Start()
     {
         _magasin = GameObject.Find("Magasin");
-        _joueur = GameObject.Find("Joueur");
+        if (ParametresParties.Instance.caraIndex == 0){
+            _joueur = GameObject.Find("Joueur");
+        }
+        else if (ParametresParties.Instance.caraIndex == 1){
+            _joueur = GameObject.Find("Joueuse");
+        }
         _inventaire = _joueur.GetComponent<Inventaire>();
         _controller = _joueur.GetComponent<CharacterController>();
     }
