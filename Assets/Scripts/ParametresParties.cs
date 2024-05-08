@@ -6,7 +6,7 @@ public class ParametresParties
     public int OrDepart { get; set; } = 200;
     public int OeufsDepart { get; set; } = 5;
     public int SemencesDepart { get; set; } = 5;
-    public int caraIndex = 0;
+    public int caraIndex { get; set; } = 0;
 
     ///// <summary>
     ///// Nombre de jours n�cessaires � un chou pour �tre pr�ts

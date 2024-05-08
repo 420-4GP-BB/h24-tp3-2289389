@@ -44,6 +44,9 @@ public class EtatNormal : EtatJoueur
             if (actionnable != null &&
                 actionnable.GetComponent<IActionnable>().Permis(Sujet))
             {
+                //Debug.Log(actionnable); 
+                //Debug.Log(actionnable.GetComponent<IActionnable>().Permis(Sujet));
+                //Debug.Log("Actionnable");
                 Sujet.ChangerEtat(new EtatAction(Sujet, actionnable));
             }
         }

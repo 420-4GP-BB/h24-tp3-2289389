@@ -16,6 +16,7 @@ public class EtatPlanter : EtatJoueur
 
     public override void Enter()
     {
+        Debug.Log("Planter");
         Animateur.SetBool("Planter", true);
     }
 
