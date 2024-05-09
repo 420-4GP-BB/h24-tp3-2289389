@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using UnityEngine.AI;
+using System.Collections;
 
 public class ComportementJoueur : MonoBehaviour
 {
@@ -44,6 +45,10 @@ public class ComportementJoueur : MonoBehaviour
 
     private Soleil _soleil;
 
+    private Vector3? positionFinale;
+
+    private Coroutine _deplacement;
+
 
     // Start is called before the first frame update
     void Start()
@@ -67,6 +72,7 @@ public class ComportementJoueur : MonoBehaviour
         TempsDepuisDernierRepas = 0.0f;
 
         GetComponent<NavMeshAgent>().enabled = false;
+        _deplacement = null;
     }
 
     void Update()
@@ -77,9 +83,23 @@ public class ComportementJoueur : MonoBehaviour
 
     public void ChangerEtat(EtatJoueur nouvelEtat)
     {
+        if (_deplacement != null)
+            StopCoroutine(_deplacement);
         _etat.Exit();
-        _etat = nouvelEtat;
-        _etat.Enter();
+        //_etat = nouvelEtat;
+        //Debug.Log("nouvelEtat: " + nouvelEtat);
+        positionFinale = Utilitaires.PositionSouris();
+        if (positionFinale != null && _etat is EtatNormal && nouvelEtat is EtatAction)
+        {
+            _etat = nouvelEtat;
+            _deplacement = StartCoroutine(DeplacerJoueur(positionFinale ?? Vector3.zero));
+        }
+        else
+        {
+            _etat = nouvelEtat;
+            _etat.Enter();
+        }
+        //_etat.Enter();
     }
 
     public void ReplacerPositionDepart()
@@ -120,4 +140,24 @@ public class ComportementJoueur : MonoBehaviour
     {
         get => _inventaire.Oeuf > 0 || _inventaire.Choux > 0;
     }
+
+    private IEnumerator DeplacerJoueur(Vector3 positionFinale)
+    {
+        Vector3 direction = (positionFinale - transform.position).normalized;
+        direction.y = 0f;
+        Quaternion rotation = Quaternion.LookRotation(direction);
+        float temps = 0f;
+        float rotationTemps = 0.25f;
+
+        while (temps < rotationTemps)
+        {
+            float pourcentage = temps / rotationTemps;
+            transform.rotation = Quaternion.Slerp(transform.rotation, rotation, pourcentage);
+            temps += Time.deltaTime;
+            yield return null;
+        }
+        yield return new WaitForSeconds(0.25f);
+        _etat.Enter();
+    }
+
 }

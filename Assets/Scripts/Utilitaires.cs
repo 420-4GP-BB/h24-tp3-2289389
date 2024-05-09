@@ -27,4 +27,18 @@ public class Utilitaires
 
         return null;
     }
+
+    public static Vector3? PositionSouris()
+    {
+        Vector3 positionSouris = Input.mousePosition;
+        Ray ray = Camera.main.ScreenPointToRay(positionSouris);
+        RaycastHit hit;
+        if (Physics.Raycast(ray, out hit))
+        {
+            return hit.point;
+        }
+        return null;
+    }
+
+
 }
