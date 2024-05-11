@@ -3,10 +3,13 @@ using UnityEngine.AI;
 
 public class MouvementPoulet : MonoBehaviour
 {
-    // private UnityEngine.GameObject _zoneRelachement;
-    // private float _angleDerriere;  // L'angle pour que le poulet soit derrière le joueur
-    // private UnityEngine.GameObject joueur;
-    // private bool _suivreJoueur = true;
+    private GameObject _zoneRelachement;
+    private float _angleDerriere;
+    private GameObject _joueur;
+    private bool _suivreJoueur = true;
+    private bool _arriveFerme = false;
+    private bool _estInitialise = false;
+    private float _distanceJoueur = 3f;
 
     private NavMeshAgent _agent;
     private Animator _animator;
@@ -15,29 +18,62 @@ public class MouvementPoulet : MonoBehaviour
 
     void Start()
     {
-        // _zoneRelachement = UnityEngine.GameObject.Find("ZoneRelachePoulet");
-        // joueur = UnityEngine.GameObject.Find("Joueur");
-        // _suivreJoueur = true;
-        // _angleDerriere = Random.Range(-60.0f, 60.0f);
+        _zoneRelachement = GameObject.Find("NavMeshObstacle");
+        _joueur = GameObject.Find("Joueur");
+        _angleDerriere = Random.Range(-60.0f, 60.0f);
 
         _animator = GetComponent<Animator>();
         _agent = GetComponent<NavMeshAgent>();
         _pointsDeDeplacement = GameObject.FindGameObjectsWithTag("PointsPoulet");
         _animator.SetBool("Walk", true);
-        Initialiser();
+        if (!_estInitialise)
+        {
+            Initialiser();
+            _estInitialise = true;
+        }
     }
 
     void Initialiser()
     {
-        // Position initiale sur la ferme
+        Vector3 nouvellePosition = TrouverEspace(_joueur.transform.position, 1.5f);
         _agent.enabled = false;
         var point = _pointsDeDeplacement[Random.Range(0, _pointsDeDeplacement.Length)];
-        transform.position = point.transform.position;
+        transform.position = nouvellePosition;
         _agent.enabled = true;
+        if (Vector3.Distance(transform.position, _joueur.transform.position) > 3.0f)
+        {
+            if (nouvellePosition != Vector3.zero)
+            {
+                transform.position = nouvellePosition;
+            }
+
+        }
 
         gameObject.GetComponent<PondreOeufs>().enabled = true;
+        _suivreJoueur = true;
+        _arriveFerme = false;
+        _agent.speed = 4f;
 
         ChoisirDestinationAleatoire();
+    }
+
+    Vector3 TrouverEspace(Vector3 centre, float rayon)
+    {
+        Vector3 positionApparition = Vector3.zero;
+        int tentatives = 10;
+        while (tentatives > 0)
+        {
+            Vector3 directionAleatoire = Random.insideUnitSphere * rayon;
+            directionAleatoire += centre;
+            NavMeshHit hit;
+            if (NavMesh.SamplePosition(directionAleatoire, out hit, rayon, NavMesh.AllAreas))
+            {
+                positionApparition = hit.position;
+                break;
+            }
+            tentatives--;
+        }
+        return positionApparition;
     }
 
     void ChoisirDestinationAleatoire()
@@ -48,16 +84,43 @@ public class MouvementPoulet : MonoBehaviour
 
     void Update()
     {
-        // if (_suivreJoueur)
-        // {
-        //     Vector3 directionAvecJoueur = Quaternion.AngleAxis(_angleDerriere, Vector3.up) * joueur.transform.forward;
-        //     transform.position = joueur.transform.position - directionAvecJoueur;
-        //     transform.rotation = joueur.transform.rotation;
-        // }
+        float distancePoulet = Vector3.Distance(transform.position, _joueur.transform.position);
+        bool joueurDansMaison = Vector3.Distance(_joueur.transform.position, _zoneRelachement.transform.position) <= _zoneRelachement.GetComponent<BoxCollider>().size.magnitude / 2f;
 
+        if (_suivreJoueur && !joueurDansMaison)
+        {
+            if (distancePoulet < _distanceJoueur)
+            {
+                _agent.SetDestination(transform.position);
+                _animator.SetBool("Walk", false);
+            }
+            else
+            {
+                Vector3 directionPoulet = (_joueur.transform.position - transform.position).normalized;
+                transform.rotation = Quaternion.LookRotation(directionPoulet);
+                _agent.SetDestination(_joueur.transform.position - directionPoulet * _distanceJoueur);
+                _animator.SetBool("Walk", true);
+            }
+        }
+        else
+        {
+            _arriveFerme = true;
+            _suivreJoueur = false;
+            _animator.SetBool("Walk", false);
+            ChoisirDestinationAleatoire();
+        }
         if (!_agent.pathPending && _agent.remainingDistance < 0.5f)
         {
-            ChoisirDestinationAleatoire();
+            if (_arriveFerme)
+            {
+                ChoisirDestinationAleatoire();
+                _arriveFerme = false;
+                _agent.speed = 1.5f;
+            }
+            else
+            {
+                _suivreJoueur = true;
+            }
         }
     }
 }
