@@ -17,6 +17,7 @@ public class ChouPret : MonoBehaviour, IRamassable
         _chouMesh3D.CacherObjets();
         inventaireJoueur.Choux++;
         Destroy(this);
+        gameObject.AddComponent<EmplacementChouVide>(); // On remet un emplacement vide, ligne a ajouter pour le test
     }
 
     public EtatJoueur EtatAUtiliser(ComportementJoueur Sujet)
