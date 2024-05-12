@@ -15,16 +15,26 @@ public class MouvementPoulet : MonoBehaviour
     private Animator _animator;
 
     private GameObject[] _pointsDeDeplacement;
+    private GameObject[] _pointsRenard;
+
+    private Soleil _soleil;
 
     void Start()
     {
+        _soleil = GameObject.FindObjectOfType<Soleil>();
+
         _zoneRelachement = GameObject.Find("NavMeshObstacle");
         _joueur = GameObject.Find("Joueur");
+        if (ParametresParties.Instance.caraIndex == 1)
+            _joueur = GameObject.Find("Joueuse");
         _angleDerriere = Random.Range(-60.0f, 60.0f);
 
         _animator = GetComponent<Animator>();
         _agent = GetComponent<NavMeshAgent>();
         _pointsDeDeplacement = GameObject.FindGameObjectsWithTag("PointsPoulet");
+        _pointsRenard = GameObject.FindGameObjectsWithTag("PointRenard");
+        //Debug.Log(_pointsRenard.Length);
+        //Debug.Log(_pointsDeDeplacement.Length);
         _animator.SetBool("Walk", true);
         if (!_estInitialise)
         {
@@ -78,7 +88,24 @@ public class MouvementPoulet : MonoBehaviour
 
     void ChoisirDestinationAleatoire()
     {
-        GameObject point = _pointsDeDeplacement[Random.Range(0, _pointsDeDeplacement.Length)];
+        _animator.SetBool("Walk", true);
+        GameObject[] pointsDeDestination = _pointsDeDeplacement;
+        if (_soleil.CurrentTimeOfDay >= 21.0f || _soleil.CurrentTimeOfDay < 8.0f)
+        {
+            int index = 0;
+            pointsDeDestination = new GameObject[_pointsDeDeplacement.Length + _pointsRenard.Length];
+            for (int i = 0; i < _pointsDeDeplacement.Length; i++)
+            {
+                pointsDeDestination[index++] = _pointsDeDeplacement[i];
+            }
+            for (int i = 0; i < _pointsRenard.Length; i++)
+            {
+                pointsDeDestination[index++] = _pointsRenard[i];
+            }
+            //Debug.Log(pointsDeDestination.Length);
+        }
+
+        GameObject point = pointsDeDestination[Random.Range(0, pointsDeDestination.Length)];
         _agent.SetDestination(point.transform.position);
     }
 
@@ -106,16 +133,18 @@ public class MouvementPoulet : MonoBehaviour
         {
             _arriveFerme = true;
             _suivreJoueur = false;
-            _animator.SetBool("Walk", false);
-            ChoisirDestinationAleatoire();
+            if (_agent.remainingDistance <= _agent.stoppingDistance)
+                ChoisirDestinationAleatoire();
         }
         if (!_agent.pathPending && _agent.remainingDistance < 0.5f)
         {
             if (_arriveFerme)
             {
-                ChoisirDestinationAleatoire();
                 _arriveFerme = false;
                 _agent.speed = 1.5f;
+                _animator.SetBool("Walk", true);
+                if (_agent.remainingDistance <= _agent.stoppingDistance)
+                    ChoisirDestinationAleatoire();
             }
             else
             {

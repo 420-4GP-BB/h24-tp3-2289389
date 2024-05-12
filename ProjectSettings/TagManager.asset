@@ -6,6 +6,7 @@ TagManager:
   tags:
   - PointsPoulet
   - Poule
+  - PointRenard
   layers:
   - Default
   - TransparentFX
