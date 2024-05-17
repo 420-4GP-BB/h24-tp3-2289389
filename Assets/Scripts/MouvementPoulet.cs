@@ -136,7 +136,7 @@ public class MouvementPoulet : MonoBehaviour
             if (_agent.remainingDistance <= _agent.stoppingDistance)
                 ChoisirDestinationAleatoire();
         }
-        if (!_agent.pathPending && _agent.remainingDistance < 0.5f)
+        if (!_agent.pathPending && _agent.remainingDistance < 0.3f)
         {
             if (_arriveFerme)
             {
@@ -149,6 +149,20 @@ public class MouvementPoulet : MonoBehaviour
             else
             {
                 _suivreJoueur = true;
+            }
+        }
+
+        foreach (var other in FindObjectsOfType<MouvementPoulet>())
+        {
+            if (other != this)
+            {
+                float distance = Vector3.Distance(transform.position, other.transform.position);
+                if (distance < _agent.radius * 2)
+                {
+                    Vector3 direction = transform.position - other.transform.position;
+                    direction.Normalize();
+                    _agent.SetDestination(transform.position + direction * (_agent.radius * 2));
+                }
             }
         }
     }
