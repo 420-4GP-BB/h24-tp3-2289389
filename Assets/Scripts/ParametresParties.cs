@@ -7,6 +7,7 @@ public class ParametresParties
     public int OeufsDepart { get; set; } = 5;
     public int SemencesDepart { get; set; } = 5;
     public int caraIndex { get; set; } = 0;
+    public static StrategieForet _strategieForet { get; set; } = new ForetGrille();
 
     ///// <summary>
     ///// Nombre de jours n�cessaires � un chou pour �tre pr�ts

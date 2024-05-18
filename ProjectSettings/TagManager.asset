@@ -7,6 +7,8 @@ TagManager:
   - PointsPoulet
   - Poule
   - PointRenard
+  - Arbre
+  - ZoneExclue
   layers:
   - Default
   - TransparentFX

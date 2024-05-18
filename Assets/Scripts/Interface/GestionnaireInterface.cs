@@ -14,6 +14,7 @@ public class GestionnaireInterface : MonoBehaviour
     }
 
     private Difficulte difficulte;
+    private ForetGenerator foretGenerator;
 
     [SerializeField] private TMP_InputField nomJoueur;
     [SerializeField] private TMP_Text presentation;
@@ -25,14 +26,13 @@ public class GestionnaireInterface : MonoBehaviour
     [SerializeField] private TMP_Text[] valeursDepart;
     [SerializeField] private TMP_Dropdown difficulteDropdown;
     [SerializeField] private TMP_Dropdown caraDropdown;
+    [SerializeField] private TMP_Dropdown dropdownForet;
     [SerializeField] private Camera cameraHomme;
     [SerializeField] private Camera cameraFemme;
     [SerializeField] private RawImage maleCharacterImage;
     [SerializeField] private RawImage femaleCharacterImage;
 
     private int caraIndex = 0;
-
-    
 
     // Start is called before the first frame update
     void Start()
@@ -45,6 +45,13 @@ public class GestionnaireInterface : MonoBehaviour
 
         cameraFemme.gameObject.SetActive(false);
         femaleCharacterImage.gameObject.SetActive(false);
+
+        foretGenerator = FindObjectOfType<ForetGenerator>();
+        ParametresParties._strategieForet = new ForetGrille();
+        dropdownForet.onValueChanged.AddListener(delegate
+        {
+            ChangerForet(dropdownForet.value);
+        });
     }
 
     void Update()
@@ -142,4 +149,23 @@ public class GestionnaireInterface : MonoBehaviour
                 break;
         }
     }
+    public void ChangerForet(int choixForet)
+    {
+        switch (choixForet)
+        {
+            case 0:
+                ParametresParties._strategieForet  = new ForetGrille();
+                break;
+            case 1:
+                ParametresParties._strategieForet  = new ForetRandom();
+                break;
+            case 2:
+                ParametresParties._strategieForet  = new ForetSimulation();
+                break;
+            default:
+                break;
+        }
+        foretGenerator.SetStrategy(ParametresParties._strategieForet);
+    }
+
 }

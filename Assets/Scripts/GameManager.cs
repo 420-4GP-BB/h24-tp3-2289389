@@ -4,8 +4,11 @@ using UnityEngine.SceneManagement;
 public class GameManager : MonoBehaviour
 {
     [SerializeField] private Soleil _soleil;
+    [SerializeField] private GameObject arbrePrefab;
 
     private ComportementJoueur _joueur;
+
+    private GestionnaireInterface _gestionnaireInterface;
 
     private const float DISTANCE_ACTION = 3.0f;
 
@@ -14,8 +17,11 @@ public class GameManager : MonoBehaviour
     private ChouMesh3D[] _chous;
     public int NumeroJour = 1;
 
+
     void Start()
     {
+        ParametresParties._strategieForet.GenerateForet(arbrePrefab);
+
         if (ParametresParties.Instance.caraIndex == 0)
             _joueur = GameObject.Find("Joueur").GetComponent<ComportementJoueur>();
         else if (ParametresParties.Instance.caraIndex == 1)
