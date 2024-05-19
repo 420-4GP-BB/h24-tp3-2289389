@@ -8,6 +8,7 @@ public class RetournerAuMenu : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Escape))
         {
+            GameObject.FindObjectOfType<GestionnaireSauvegarde>().SauvegarderPartie();
             UnityEngine.SceneManagement.SceneManager.LoadScene(0);
         }
     }

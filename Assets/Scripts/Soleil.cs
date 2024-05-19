@@ -48,7 +48,7 @@ public class Soleil : MonoBehaviour
     [SerializeField] private float vitesse = 10.0f; // 10 minutes par seconde
 
     private Light _light;
-    private float _ancienPourcentage;    
+    private float _ancienPourcentage;
     private float dureeJournee = ConstantesJeu.MINUTES_PAR_JOUR; // 24 heures
     private float dureeJourneeRestante;
 
@@ -145,15 +145,22 @@ public class Soleil : MonoBehaviour
     {
         get
         {
-        float timeElapsedSince8AM = dureeJournee - dureeJourneeRestante;
-        while (timeElapsedSince8AM >= dureeJournee)
-        {
-            timeElapsedSince8AM -= dureeJournee;
+            float timeElapsedSince8AM = dureeJournee - dureeJourneeRestante;
+            while (timeElapsedSince8AM >= dureeJournee)
+            {
+                timeElapsedSince8AM -= dureeJournee;
+            }
+            float timeOfDay = (timeElapsedSince8AM / dureeJournee) * 24.0f;
+            //timeOfDay += 8.0f; je comprend pas pourquoi on ajoute 8 ici, quel est la logique????
+            timeOfDay %= 24.0f;
+            return timeOfDay;
         }
-        float timeOfDay = (timeElapsedSince8AM / dureeJournee) * 24.0f;
-        //timeOfDay += 8.0f; je comprend pas pourquoi on ajoute 8 ici, quel est la logique????
-        timeOfDay %= 24.0f;
-        return timeOfDay;
-        }
+    }
+
+    public void SetTimeOfDay(float temps)
+    {
+        temps = Mathf.Repeat(temps, 24.0f);
+        dureeJourneeRestante = dureeJournee * (1.0f - (temps / 24.0f));
+        _ancienPourcentage = 1.0f - ProportionRestante;
     }
 }

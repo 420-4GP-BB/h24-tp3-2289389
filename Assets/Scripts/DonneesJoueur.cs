@@ -4,7 +4,13 @@ using UnityEngine;
 
 public class DonneesJoueur : MonoBehaviour
 {
-    public string Nom { get; private set; }
+    private string _nom;
+
+    public string Nom
+    {
+        get { return _nom; }
+        set { _nom = value; }
+    }
 
     void Awake()
     {

@@ -9,7 +9,8 @@ public class EnergieJoueur : MonoBehaviour
 
     private Soleil _soleil;
     private ComportementJoueur _mouvementJoueur;
-    private float _energie = 1.0f;
+    private float _energie;
+    private GestionnaireSauvegarde _gestionnaireSauvegarde;
 
     public float Energie
     {
@@ -25,7 +26,11 @@ public class EnergieJoueur : MonoBehaviour
 
     void Start()
     {
-        _energie = 1.0f;
+        _gestionnaireSauvegarde = FindObjectOfType<GestionnaireSauvegarde>();
+        if (!_gestionnaireSauvegarde.FichierExiste)
+        {
+            Energie = 1.0f;
+        }
         _mouvementJoueur = GetComponent<ComportementJoueur>();
         _soleil = GameObject.Find("Directional Light").GetComponent<Soleil>();
     }

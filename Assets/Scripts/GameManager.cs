@@ -73,6 +73,7 @@ public class GameManager : MonoBehaviour
     private void EnergieVide()
     {
         _joueur.ChangerEtat(new EtatDansMenu(_joueur));
+        GetComponent<GestionnaireSauvegarde>().Supprimer();
         GestionnaireMessages.Instance.AfficherMessageFin(
             "Plus d'?nergie!",
             "Vous n'avez pas r?ussi ? vous garder en vie, vous tombez sans connaissance au milieu du champ." +

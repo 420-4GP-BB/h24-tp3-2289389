@@ -79,6 +79,11 @@ public class GestionnaireInterface : MonoBehaviour
 
     public void DemarrerPartie()
     {
+        PlayerPrefs.SetString("NomJoueur", nomJoueur.text);
+        PlayerPrefs.SetInt("Difficulte", (int)difficulte);
+        PlayerPrefs.SetInt("CaraIndex", caraIndex);
+        PlayerPrefs.SetInt("ForetIndex", dropdownForet.value);
+
         int[] valeursActuelles = null;
         switch (difficulte)
         {
@@ -154,13 +159,13 @@ public class GestionnaireInterface : MonoBehaviour
         switch (choixForet)
         {
             case 0:
-                ParametresParties._strategieForet  = new ForetGrille();
+                ParametresParties._strategieForet = new ForetGrille();
                 break;
             case 1:
-                ParametresParties._strategieForet  = new ForetRandom();
+                ParametresParties._strategieForet = new ForetRandom();
                 break;
             case 2:
-                ParametresParties._strategieForet  = new ForetSimulation();
+                ParametresParties._strategieForet = new ForetSimulation();
                 break;
             default:
                 break;
@@ -168,4 +173,41 @@ public class GestionnaireInterface : MonoBehaviour
         foretGenerator.SetStrategy(ParametresParties._strategieForet);
     }
 
+    public void ContinuerPartie()
+    {
+        string nomJoueur = PlayerPrefs.GetString("NomJoueur", "Mathurin");
+        int difficulte = PlayerPrefs.GetInt("Difficulte", 0);
+        int caraIndex = PlayerPrefs.GetInt("CaraIndex", 0);
+        int foretIndex = PlayerPrefs.GetInt("ForetIndex", 0);
+
+        ParametresParties.Instance.NomJoueur = nomJoueur;
+        ParametresParties.Instance.caraIndex = caraIndex;
+
+        int[] valeursActuelles = null;
+        switch ((GestionnaireInterface.Difficulte)difficulte)
+        {
+            case GestionnaireInterface.Difficulte.Facile:
+                valeursActuelles = valeursFacile;
+                break;
+            case GestionnaireInterface.Difficulte.Moyen:
+                valeursActuelles = valeursMoyen;
+                break;
+            case GestionnaireInterface.Difficulte.Difficile:
+                valeursActuelles = valeursDifficile;
+                break;
+        }
+
+        if (valeursActuelles != null)
+        {
+            ParametresParties.Instance.OrDepart = valeursActuelles[0];
+            ParametresParties.Instance.OeufsDepart = valeursActuelles[1];
+            ParametresParties.Instance.SemencesDepart = valeursActuelles[2];
+            ParametresParties.Instance.TempsCroissance = valeursActuelles[3];
+            ParametresParties.Instance.DelaiCueillete = valeursActuelles[4];
+        }
+        ChangerForet(foretIndex);
+        
+        GetComponent<GestionnaireSauvegarde>().ChargerPartie("Ferme");
+        
+    }
 }
